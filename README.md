@@ -34,12 +34,6 @@ flowchart TD
 
 `docs/` 配下は取得したバイト列をそのまま保存しており、手を加えません。上流から消えたページは次回の同期で削除されます。
 
-## 自動更新
-
-`.github/workflows/sync-docs.yml` が `cron: "17 3 */2 * *"` で動きます。UTC 03:17 に隔日で実行されるため、31 日ある月の変わり目だけ間隔が 1 日になります。Actions タブの `Sync docs` から `Run workflow` で手動実行もできます。
-
-セットアップ時の前提が 2 点あります。リポジトリの Settings > Actions > General > Workflow permissions を `Read and write permissions` にすること。もう 1 点は GitHub の仕様で、リポジトリが 60 日間更新されないと `schedule` トリガーは自動的に無効化されるため、その場合は Actions タブから再度有効化すること。なお `schedule` の起動時刻は数分から十数分ずれることがあります。
-
 ## 手元で実行する
 
 Python 3.10 以降があれば、追加の依存なしで動きます。
