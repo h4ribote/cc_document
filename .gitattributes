@@ -1,0 +1,2 @@
+# The mirror stores upstream bytes verbatim, so keep Git from rewriting line endings in it.
+docs/** -text
