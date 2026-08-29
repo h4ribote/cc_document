@@ -35,7 +35,9 @@ export OTEL_LOGS_EXPORT_INTERVAL=5000     # 5 seconds (default: 5000ms)
 claude
 ```
 
-To verify a setup that exports metrics, check your backend for the `claude_code.session.count` metric, which Claude Code emits when a session starts. To verify a logs-only setup, submit a prompt and check for the `claude_code.user_prompt` event. If nothing arrives, run `claude --debug` and check the debug log for OTel export errors.
+To verify a setup that exports metrics, check your backend for the `claude_code.session.count` metric, which Claude Code emits when a session starts. To verify a logs-only setup, submit a prompt and check for the `claude_code.user_prompt` event.
+
+If nothing arrives, run `claude --debug` and check the debug log. Claude Code reports failures from the exporters you configure as `[3P telemetry]` errors, where 3P means third-party. Lines prefixed `[Anthropic telemetry]` describe [Anthropic's separate operational telemetry](/docs/en/data-usage#telemetry-services) and don't indicate a problem with your setup.
 
 For full configuration options, see the [OpenTelemetry specification](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/protocol/exporter.md#configuration-options).
 
@@ -1123,7 +1125,7 @@ Logged once per run of the retention cleanup sweep, which deletes [session trans
 
 Like every OTel event on this page, it goes only to the telemetry backend you configure. Requires Claude Code v2.1.227 or later.
 
-When Claude Code can't safely determine the retention period, it pauses the sweep and emits the event with `result` set to `"skipped"` and a `skip_reason`. When [managed settings](/docs/en/server-managed-settings) set `cleanupPeriodDays`, the managed value pins the retention period and the sweep runs even when a settings file in a lower-priority scope is broken or invalid. When `managed-settings.json` itself can't be read or parsed, Claude Code still pauses the sweep unless the [managed source it selects](/docs/en/server-managed-settings#settings-precedence) supplies `cleanupPeriodDays` from elsewhere, such as server-managed settings or a `managed-settings.d/` drop-in beside the broken file. The deletion counter attributes are present only when `result` is `"complete"`.
+When Claude Code can't safely determine the retention period, it pauses the sweep and emits the event with `result` set to `"skipped"` and a `skip_reason`. When [managed settings](/docs/en/server-managed-settings) set `cleanupPeriodDays`, the managed value pins the retention period and the sweep runs even when a settings file in a lower-priority scope is broken or invalid. When `managed-settings.json` itself can't be read or parsed, Claude Code still pauses the sweep unless the [managed tier](/docs/en/managed-settings#how-claude-code-combines-managed-sources) supplies `cleanupPeriodDays` from elsewhere, such as server-managed settings or a `managed-settings.d/` drop-in beside the broken file. The deletion counter attributes are present only when `result` is `"complete"`.
 
 **Event Name**: `claude_code.retention_sweep`
 
@@ -1196,7 +1198,7 @@ To distinguish a session that recovered from one that stalled, group events by `
 
 ### Event analysis
 
-The event data provides detailed insights into Claude Code interactions:
+The event data describes each Claude Code interaction in detail:
 
 **Tool usage patterns**: analyze tool result events to identify:
 
@@ -1272,7 +1274,7 @@ Point `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT` at your SIEM's OTLP receiver, or at an 
 }
 ```
 
-To confirm events arrive, submit a prompt in a session running under this configuration and check your SIEM for the `claude_code.user_prompt` event. If nothing arrives, run `claude --debug` and check the debug log for OTel export errors.
+To confirm events arrive, submit a prompt in a session running under this configuration and check your SIEM for the `claude_code.user_prompt` event. If nothing arrives, run `claude --debug` and check the debug log for `[3P telemetry]` export errors.
 
 ## Backend considerations
 
